@@ -12,6 +12,9 @@
 #include <Arduino.h>
 #include <MQTT.h>
 #include <FLASH.h>
+/** SCD30 */
+#include <SparkFun_SCD30_Arduino_Library.h>
+#include <Wire.h>
 
 /** MQTT Lib */
 MQTT mqtt_lib;
@@ -21,10 +24,14 @@ FLASH flash_lib;
 uint64_t sleep_time;
 /** Turn on/off debug output */
 #define DEBUG 1
+/** SCD30 */
+SCD30 scd30;
 
 /** Forward declatration */
 void load_flash();
 void R_LOG(String chan, String data);
+/** SCD30 */
+void check_scd30();
 
 /**
  * @brief Main firmware setup
@@ -55,6 +62,16 @@ void setup()
     flash_lib.flash_setup();
     /** Load settings from flash */
     load_flash();
+
+    /** SCD30 */
+    Wire.begin();
+    delay(500);
+    if(!scd30.begin())
+    {
+        R_LOG("SCD30", "Not found!");
+    } else {
+        R_LOG("SCD30", "Found!");
+    }
 }
 
 /**
@@ -70,6 +87,23 @@ void loop()
     if ((micros() - last_sch) >= sleep_time)
     {
         last_sch = micros();
+        /** SCD30 */
+        check_scd30();
+    }
+}
+
+/**
+ * @brief Check for SCD30 readings and send via MQTT
+ * 
+ */
+void check_scd30()
+{
+    String data;
+    if(scd30.dataAvailable())
+    {
+        data = String(scd30.getCO2()) + "+" + String(scd30.getTemperature()) + "+" + String(scd30.getHumidity());
+        R_LOG("SCD30", data);
+        mqtt_lib.mqtt_publish("scd1", data);
     }
 }
 
@@ -79,7 +113,7 @@ void loop()
  */
 void load_flash()
 {
-    sleep_time = flash_lib.get_64u("stime", 2000000);
+    sleep_time = flash_lib.get_64u("stime", 15000000);
     R_LOG("FLASH", "Read: Sleep time " + String(sleep_time));
 }
 

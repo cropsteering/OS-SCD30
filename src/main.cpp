@@ -68,9 +68,9 @@ void setup()
     delay(500);
     if(!scd30.begin())
     {
-        R_LOG("SCD30", "Not found!");
+        R_LOG("SCD30", "Not found");
     } else {
-        R_LOG("SCD30", "Found!");
+        R_LOG("SCD30", "Found");
     }
 }
 
@@ -103,7 +103,7 @@ void check_scd30()
     {
         data = String(scd30.getCO2()) + "+" + String(scd30.getTemperature()) + "+" + String(scd30.getHumidity());
         R_LOG("SCD30", data);
-        mqtt_lib.mqtt_publish("scd1", data);
+        mqtt_lib.mqtt_publish(mqtt_lib.MQTT_ID, data);
     }
 }
 

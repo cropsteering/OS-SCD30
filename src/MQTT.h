@@ -26,14 +26,13 @@ class MQTT
     void mqtt_setup();
     void mqtt_loop();
     void mqtt_publish(String addr, String data);
-
-    const char* MQTT_ID;
 };
 
 /** Overloads for config */
 extern bool CSV;
 extern uint64_t sleep_time;
 extern FLASH flash_lib;
+extern const char* MQTT_ID;
 
 void flash_32(const char* key, int32_t value, bool restart);
 void flash_32u(const char* key, uint32_t value, bool restart);

@@ -103,7 +103,7 @@ void check_scd30()
     {
         data = String(scd30.getCO2()) + "+" + String(scd30.getTemperature()) + "+" + String(scd30.getHumidity());
         R_LOG("SCD30", data);
-        mqtt_lib.mqtt_publish(mqtt_lib.MQTT_ID, data);
+        mqtt_lib.mqtt_publish(MQTT_ID, data);
     }
 }
 
